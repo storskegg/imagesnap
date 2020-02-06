@@ -10,7 +10,7 @@
 static BOOL g_verbose = NO;
 static BOOL g_quiet = NO;
 
-NSString *const VERSION = @"0.2.5";
+NSString *const VERSION = @"0.2.7";
 
 @interface ImageSnap()
 
@@ -155,7 +155,7 @@ NSString *const VERSION = @"0.2.5";
     }
 
     self.captureStillImageOutput = [AVCaptureStillImageOutput new];
-    self.captureStillImageOutput.outputSettings = @{ AVVideoCodecKey : AVVideoCodecJPEG};
+    self.captureStillImageOutput.outputSettings = @{ AVVideoCodecKey : AVVideoCodecTypeJPEG};
 
     if ([self.captureSession canAddOutput:self.captureStillImageOutput]) {
         [self.captureSession addOutput:self.captureStillImageOutput];
@@ -197,7 +197,7 @@ NSString *const VERSION = @"0.2.5";
 
          dispatch_async(self.imageQueue, ^{
              [imageData writeToFile:weakFilename atomically:YES];
-             dispatch_semaphore_signal(_semaphore);
+             dispatch_semaphore_signal(self->_semaphore);
          });
      }];
 }
