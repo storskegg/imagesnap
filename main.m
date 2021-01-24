@@ -4,9 +4,9 @@
 
 int processArguments(int argc, const char * argv[]);
 void printUsage(int argc, const char * argv[]);
-int listDevices();
-NSString *generateFilename();
-AVCaptureDevice *getDefaultDevice();
+int listDevices(void);
+NSString *generateFilename(void);
+AVCaptureDevice *getDefaultDevice(void);
 
 int main(int argc, const char * argv[]) {
     NSApplicationLoad();    // May be necessary for 10.5 not to crash.
@@ -167,13 +167,23 @@ void printUsage(int argc, const char * argv[]) {
  */
 int listDevices() {
     NSArray *devices = [ImageSnap videoDevices];
-
+    NSString *string, *filteredString;
+    NSRange start, end;
+    
     printf(devices.count > 0 ? "Video Devices:\n" : "No video devices found.\n");
 
     for (AVCaptureDevice *device in devices) {
-        printf("%s\n", device.description.UTF8String);
+        string = [[NSString alloc] initWithUTF8String:device.description.UTF8String];
+        filteredString = [string stringByReplacingOccurrencesOfString:@"[.*]"
+        withString:@""
+        options:NSRegularExpressionSearch range:NSMakeRange(0, string.length)];
+
+        start = [filteredString rangeOfString:@"["];
+        end =   [filteredString rangeOfString:@"]"];
+
+        printf( (" \"%s\"\n"), [[filteredString substringWithRange:NSMakeRange(start.location + 1, end.location - (start.location + 1))] UTF8String] );
     }
-    return devices.count;
+    return (int) devices.count;
 }
 
 /**
